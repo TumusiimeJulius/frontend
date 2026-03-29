@@ -67,6 +67,7 @@ const DEFAULT_BOARDS = [
 
 const state = {
   theme: "light",
+  look: "startup",
   activeBoardId: "b1",
   search: "",
   boards: cloneDefaultBoards(),
@@ -85,6 +86,7 @@ const state = {
 let persistTimer = null;
 const STORAGE_KEY = "kanban_app_state_v1";
 const AUTH_SESSION_KEY = "kanban_auth_session_v1";
+const LOOK_KEY = "kanban_visual_look_v1";
 
 const els = {
   body: document.body,
@@ -97,6 +99,7 @@ const els = {
   settingsBtn: document.getElementById("settingsBtn"),
   themeBtn: document.getElementById("themeBtn"),
   logoutBtn: document.getElementById("logoutBtn"),
+  lookSelect: document.getElementById("lookSelect"),
   toggleSidebar: document.getElementById("toggleSidebar"),
   searchInput: document.getElementById("searchInput"),
   modalBackdrop: document.getElementById("modalBackdrop"),
@@ -129,6 +132,26 @@ function getSerializableState() {
     activeBoardId: state.activeBoardId,
     boards: state.boards,
   };
+}
+
+function getStoredLook() {
+  const look = localStorage.getItem(LOOK_KEY);
+  if (look === "enterprise" || look === "startup" || look === "darkfirst") return look;
+  return "startup";
+}
+
+function applyLook() {
+  document.body.setAttribute("data-look", state.look);
+  if (els.lookSelect) els.lookSelect.value = state.look;
+  localStorage.setItem(LOOK_KEY, state.look);
+}
+
+function setLook(nextLook) {
+  if (nextLook !== "enterprise" && nextLook !== "startup" && nextLook !== "darkfirst") return;
+  state.look = nextLook;
+  if (state.look === "darkfirst") state.theme = "dark";
+  applyLook();
+  applyTheme();
 }
 
 function setDefaults() {
@@ -181,9 +204,15 @@ function getActiveBoard() {
 }
 
 function applyTheme() {
-  const dark = state.theme === "dark";
+  const dark = state.look === "darkfirst" ? true : state.theme === "dark";
   els.body.classList.toggle("dark", dark);
-  els.themeBtn.textContent = dark ? "Light Mode" : "Dark Mode";
+  if (state.look === "darkfirst") {
+    els.themeBtn.textContent = "Dark Fixed";
+    els.themeBtn.disabled = true;
+  } else {
+    els.themeBtn.disabled = false;
+    els.themeBtn.textContent = dark ? "Light Mode" : "Dark Mode";
+  }
 }
 
 function renderBoards() {
@@ -515,12 +544,16 @@ function render() {
 els.newBoardBtn.addEventListener("click", () => openModal("new-board"));
 els.addListBtn.addEventListener("click", () => openModal("new-list"));
 els.themeBtn.addEventListener("click", () => {
+  if (state.look === "darkfirst") return;
   state.theme = state.theme === "dark" ? "light" : "dark";
   applyTheme();
   schedulePersist();
 });
+els.lookSelect.addEventListener("change", (event) => {
+  setLook(event.target.value);
+});
 els.settingsBtn.addEventListener("click", () => {
-  window.alert("Settings can be added in Step 2. This is a UI placeholder.");
+  window.alert("Use Workspace Look selector: Enterprise, Startup, or Dark-Mode-First.");
 });
 els.logoutBtn.addEventListener("click", () => {
   localStorage.removeItem(AUTH_SESSION_KEY);
@@ -546,6 +579,8 @@ function init() {
     window.location.replace("./index.html");
     return;
   }
+  state.look = getStoredLook();
+  applyLook();
   loadStateFromLocalStorage();
   render();
 }

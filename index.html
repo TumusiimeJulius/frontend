@@ -17,6 +17,14 @@
           </p>
         </div>
         <form id="authForm" class="landing-form">
+          <label class="look-control">
+            Interface Look
+            <select id="landingLookSelect">
+              <option value="enterprise">Enterprise / Minimal</option>
+              <option value="startup">Startup / Modern Bold</option>
+              <option value="darkfirst">Dark-Mode-First</option>
+            </select>
+          </label>
           <div class="auth-switch">
             <button type="button" id="signInModeBtn" class="ghost-btn full auth-mode active">Sign In</button>
             <button type="button" id="createModeBtn" class="ghost-btn full auth-mode">Create Account</button>
@@ -24,6 +32,10 @@
           <label>
             Email
             <input id="emailInput" type="email" placeholder="you@example.com" required />
+          </label>
+          <label id="usernameWrap" class="hidden">
+            Username
+            <input id="usernameInput" type="text" placeholder="Choose a username" minlength="3" />
           </label>
           <label>
             Password

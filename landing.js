@@ -1,10 +1,14 @@
 const AUTH_SESSION_KEY = "kanban_auth_session_v1";
 const USERS_KEY = "kanban_users_v1";
+const LOOK_KEY = "kanban_visual_look_v1";
 
 const form = document.getElementById("authForm");
+const landingLookSelect = document.getElementById("landingLookSelect");
 const signInModeBtn = document.getElementById("signInModeBtn");
 const createModeBtn = document.getElementById("createModeBtn");
 const emailInput = document.getElementById("emailInput");
+const usernameWrap = document.getElementById("usernameWrap");
+const usernameInput = document.getElementById("usernameInput");
 const passwordInput = document.getElementById("passwordInput");
 const confirmPasswordWrap = document.getElementById("confirmPasswordWrap");
 const confirmPasswordInput = document.getElementById("confirmPasswordInput");
@@ -18,6 +22,18 @@ const resetConfirmPasswordInput = document.getElementById("resetConfirmPasswordI
 const resetSubmitBtn = document.getElementById("resetSubmitBtn");
 
 let mode = "signin";
+
+function getStoredLook() {
+  const look = localStorage.getItem(LOOK_KEY);
+  if (look === "enterprise" || look === "startup" || look === "darkfirst") return look;
+  return "startup";
+}
+
+function applyLook(look) {
+  document.body.setAttribute("data-look", look);
+  landingLookSelect.value = look;
+  localStorage.setItem(LOOK_KEY, look);
+}
 
 function isAuthenticated() {
   const token = localStorage.getItem(AUTH_SESSION_KEY);
@@ -56,6 +72,7 @@ function setMode(nextMode) {
   const isCreate = mode === "create";
   signInModeBtn.classList.toggle("active", !isCreate);
   createModeBtn.classList.toggle("active", isCreate);
+  usernameWrap.classList.toggle("hidden", !isCreate);
   confirmPasswordWrap.classList.toggle("hidden", !isCreate);
   submitAuthBtn.textContent = isCreate ? "Create Account" : "Sign In";
   authNote.textContent = isCreate
@@ -63,15 +80,17 @@ function setMode(nextMode) {
     : "No account? Switch to Create Account.";
   forgotBtn.classList.toggle("hidden", isCreate);
   resetPanel.classList.add("hidden");
+  usernameInput.required = isCreate;
   confirmPasswordInput.required = isCreate;
   clearError();
 }
 
-function createSession(email) {
+function createSession(email, username = "") {
   localStorage.setItem(
     AUTH_SESSION_KEY,
     JSON.stringify({
       email,
+      username,
       signedInAt: new Date().toISOString(),
     }),
   );
@@ -83,6 +102,9 @@ if (isAuthenticated()) {
 
 signInModeBtn.addEventListener("click", () => setMode("signin"));
 createModeBtn.addEventListener("click", () => setMode("create"));
+landingLookSelect.addEventListener("change", (event) => {
+  applyLook(event.target.value);
+});
 forgotBtn.addEventListener("click", () => {
   clearError();
   resetPanel.classList.toggle("hidden");
@@ -127,6 +149,7 @@ form.addEventListener("submit", (event) => {
   clearError();
 
   const email = emailInput.value.trim();
+  const username = usernameInput.value.trim();
   const password = passwordInput.value.trim();
   const confirmPassword = confirmPasswordInput.value.trim();
   const valid = email.includes("@") && password.length >= 4;
@@ -139,6 +162,10 @@ form.addEventListener("submit", (event) => {
   const normalizedEmail = email.toLowerCase();
 
   if (mode === "create") {
+    if (username.length < 3) {
+      showMessage("Username is required and must be at least 3 characters.");
+      return;
+    }
     if (users[normalizedEmail]) {
       showMessage("An account with this email already exists.");
       return;
@@ -149,11 +176,12 @@ form.addEventListener("submit", (event) => {
     }
     users[normalizedEmail] = {
       email: normalizedEmail,
+      username,
       password,
       createdAt: new Date().toISOString(),
     };
     saveUsers(users);
-    createSession(normalizedEmail);
+    createSession(normalizedEmail, username);
     window.location.replace("./app.html");
     return;
   }
@@ -163,8 +191,9 @@ form.addEventListener("submit", (event) => {
     showMessage("Incorrect email or password.");
     return;
   }
-  createSession(normalizedEmail);
+  createSession(normalizedEmail, user.username || "");
   window.location.replace("./app.html");
 });
 
 setMode("signin");
+applyLook(getStoredLook());
