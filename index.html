@@ -36,6 +36,18 @@
           <div id="authError" class="landing-error hidden"></div>
           <button id="submitAuthBtn" type="submit" class="primary-btn full">Sign In</button>
           <p id="authNote" class="landing-note">No account? Switch to Create Account.</p>
+          <button type="button" id="forgotBtn" class="link-btn">Forgot password?</button>
+          <div id="resetPanel" class="reset-panel hidden">
+            <label>
+              New Password
+              <input id="resetPasswordInput" type="password" placeholder="New password" minlength="4" />
+            </label>
+            <label>
+              Confirm New Password
+              <input id="resetConfirmPasswordInput" type="password" placeholder="Confirm new password" minlength="4" />
+            </label>
+            <button id="resetSubmitBtn" type="button" class="ghost-btn full">Reset Password</button>
+          </div>
         </form>
       </section>
     </main>

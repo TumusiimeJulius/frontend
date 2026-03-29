@@ -11,6 +11,11 @@ const confirmPasswordInput = document.getElementById("confirmPasswordInput");
 const authError = document.getElementById("authError");
 const submitAuthBtn = document.getElementById("submitAuthBtn");
 const authNote = document.getElementById("authNote");
+const forgotBtn = document.getElementById("forgotBtn");
+const resetPanel = document.getElementById("resetPanel");
+const resetPasswordInput = document.getElementById("resetPasswordInput");
+const resetConfirmPasswordInput = document.getElementById("resetConfirmPasswordInput");
+const resetSubmitBtn = document.getElementById("resetSubmitBtn");
 
 let mode = "signin";
 
@@ -34,13 +39,15 @@ function saveUsers(users) {
   localStorage.setItem(USERS_KEY, JSON.stringify(users));
 }
 
-function showError(message) {
+function showMessage(message, type = "error") {
   authError.textContent = message;
+  authError.classList.toggle("landing-success", type === "success");
   authError.classList.remove("hidden");
 }
 
 function clearError() {
   authError.textContent = "";
+  authError.classList.remove("landing-success");
   authError.classList.add("hidden");
 }
 
@@ -54,6 +61,8 @@ function setMode(nextMode) {
   authNote.textContent = isCreate
     ? "Already have an account? Switch to Sign In."
     : "No account? Switch to Create Account.";
+  forgotBtn.classList.toggle("hidden", isCreate);
+  resetPanel.classList.add("hidden");
   confirmPasswordInput.required = isCreate;
   clearError();
 }
@@ -74,6 +83,44 @@ if (isAuthenticated()) {
 
 signInModeBtn.addEventListener("click", () => setMode("signin"));
 createModeBtn.addEventListener("click", () => setMode("create"));
+forgotBtn.addEventListener("click", () => {
+  clearError();
+  resetPanel.classList.toggle("hidden");
+});
+resetSubmitBtn.addEventListener("click", () => {
+  clearError();
+  const email = emailInput.value.trim().toLowerCase();
+  const newPassword = resetPasswordInput.value.trim();
+  const confirmNewPassword = resetConfirmPasswordInput.value.trim();
+
+  if (!email.includes("@")) {
+    showMessage("Enter your account email first, then reset password.");
+    return;
+  }
+  if (newPassword.length < 4) {
+    showMessage("New password must be at least 4 characters.");
+    return;
+  }
+  if (newPassword !== confirmNewPassword) {
+    showMessage("New passwords do not match.");
+    return;
+  }
+
+  const users = loadUsers();
+  const user = users[email];
+  if (!user) {
+    showMessage("No account found for this email.");
+    return;
+  }
+
+  users[email].password = newPassword;
+  users[email].updatedAt = new Date().toISOString();
+  saveUsers(users);
+  resetPanel.classList.add("hidden");
+  resetPasswordInput.value = "";
+  resetConfirmPasswordInput.value = "";
+  showMessage("Password reset successful. You can now sign in.", "success");
+});
 
 form.addEventListener("submit", (event) => {
   event.preventDefault();
@@ -84,7 +131,7 @@ form.addEventListener("submit", (event) => {
   const confirmPassword = confirmPasswordInput.value.trim();
   const valid = email.includes("@") && password.length >= 4;
   if (!valid) {
-    showError("Please enter a valid email and password (minimum 4 characters).");
+    showMessage("Please enter a valid email and password (minimum 4 characters).");
     return;
   }
 
@@ -93,11 +140,11 @@ form.addEventListener("submit", (event) => {
 
   if (mode === "create") {
     if (users[normalizedEmail]) {
-      showError("An account with this email already exists.");
+      showMessage("An account with this email already exists.");
       return;
     }
     if (password !== confirmPassword) {
-      showError("Passwords do not match.");
+      showMessage("Passwords do not match.");
       return;
     }
     users[normalizedEmail] = {
@@ -113,7 +160,7 @@ form.addEventListener("submit", (event) => {
 
   const user = users[normalizedEmail];
   if (!user || user.password !== password) {
-    showError("Incorrect email or password.");
+    showMessage("Incorrect email or password.");
     return;
   }
   createSession(normalizedEmail);
