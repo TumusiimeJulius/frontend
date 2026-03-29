@@ -83,6 +83,7 @@ const state = {
 };
 
 let persistTimer = null;
+const STORAGE_KEY = "kanban_app_state_v1";
 
 const els = {
   body: document.body,
@@ -143,34 +144,33 @@ function applyPersistedState(payload) {
   return true;
 }
 
-async function loadStateFromApi() {
+function loadStateFromLocalStorage() {
   try {
-    const response = await fetch("/api/state");
-    if (!response.ok) throw new Error("Failed to load state");
-    const payload = await response.json();
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) {
+      setDefaults();
+      return;
+    }
+    const payload = JSON.parse(raw);
     if (!applyPersistedState(payload)) setDefaults();
   } catch (error) {
     setDefaults();
-    console.warn("Persistence API unavailable. Using default in-memory data.", error);
+    console.warn("Failed to read localStorage state. Using defaults.", error);
   }
 }
 
-async function saveStateToApi() {
+function saveStateToLocalStorage() {
   try {
-    await fetch("/api/state", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(getSerializableState()),
-    });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(getSerializableState()));
   } catch (error) {
-    console.warn("Failed to persist state to API.", error);
+    console.warn("Failed to persist state to localStorage.", error);
   }
 }
 
 function schedulePersist() {
   clearTimeout(persistTimer);
   persistTimer = setTimeout(() => {
-    saveStateToApi();
+    saveStateToLocalStorage();
   }, 250);
 }
 
@@ -534,8 +534,8 @@ els.modalBackdrop.addEventListener("click", (e) => {
 els.entityForm.addEventListener("submit", submitModal);
 els.deleteBtn.addEventListener("click", deleteEntity);
 
-async function init() {
-  await loadStateFromApi();
+function init() {
+  loadStateFromLocalStorage();
   render();
 }
 
