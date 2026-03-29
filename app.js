@@ -84,6 +84,7 @@ const state = {
 
 let persistTimer = null;
 const STORAGE_KEY = "kanban_app_state_v1";
+const AUTH_SESSION_KEY = "kanban_auth_session_v1";
 
 const els = {
   body: document.body,
@@ -95,6 +96,7 @@ const els = {
   newBoardBtn: document.getElementById("newBoardBtn"),
   settingsBtn: document.getElementById("settingsBtn"),
   themeBtn: document.getElementById("themeBtn"),
+  logoutBtn: document.getElementById("logoutBtn"),
   toggleSidebar: document.getElementById("toggleSidebar"),
   searchInput: document.getElementById("searchInput"),
   modalBackdrop: document.getElementById("modalBackdrop"),
@@ -520,6 +522,10 @@ els.themeBtn.addEventListener("click", () => {
 els.settingsBtn.addEventListener("click", () => {
   window.alert("Settings can be added in Step 2. This is a UI placeholder.");
 });
+els.logoutBtn.addEventListener("click", () => {
+  localStorage.removeItem(AUTH_SESSION_KEY);
+  window.location.replace("./index.html");
+});
 els.toggleSidebar.addEventListener("click", () => {
   els.sidebar.classList.toggle("collapsed");
 });
@@ -535,6 +541,11 @@ els.entityForm.addEventListener("submit", submitModal);
 els.deleteBtn.addEventListener("click", deleteEntity);
 
 function init() {
+  const session = localStorage.getItem(AUTH_SESSION_KEY);
+  if (!session) {
+    window.location.replace("./index.html");
+    return;
+  }
   loadStateFromLocalStorage();
   render();
 }
