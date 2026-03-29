@@ -16,7 +16,11 @@
             Track your lists and tasks with your Trello-like workflow. Your data stays in this browser.
           </p>
         </div>
-        <form id="signInForm" class="landing-form">
+        <form id="authForm" class="landing-form">
+          <div class="auth-switch">
+            <button type="button" id="signInModeBtn" class="ghost-btn full auth-mode active">Sign In</button>
+            <button type="button" id="createModeBtn" class="ghost-btn full auth-mode">Create Account</button>
+          </div>
           <label>
             Email
             <input id="emailInput" type="email" placeholder="you@example.com" required />
@@ -25,9 +29,13 @@
             Password
             <input id="passwordInput" type="password" placeholder="Enter password" minlength="4" required />
           </label>
-          <div id="signInError" class="landing-error hidden">Please enter a valid email and password.</div>
-          <button type="submit" class="primary-btn full">Sign In</button>
-          <p class="landing-note">Demo mode: any valid email + password works.</p>
+          <label id="confirmPasswordWrap" class="hidden">
+            Confirm Password
+            <input id="confirmPasswordInput" type="password" placeholder="Confirm password" minlength="4" />
+          </label>
+          <div id="authError" class="landing-error hidden"></div>
+          <button id="submitAuthBtn" type="submit" class="primary-btn full">Sign In</button>
+          <p id="authNote" class="landing-note">No account? Switch to Create Account.</p>
         </form>
       </section>
     </main>

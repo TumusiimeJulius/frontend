@@ -452,6 +452,18 @@ body.dark .landing-copy {
   gap: 0.34rem;
 }
 
+.auth-switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.55rem;
+}
+
+.auth-mode.active {
+  background: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+}
+
 .landing-error {
   color: #b91c1c;
   background: #fee2e2;
