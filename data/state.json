@@ -1,0 +1,78 @@
+{
+  "theme": "light",
+  "activeBoardId": "b1",
+  "boards": [
+    {
+      "id": "b1",
+      "name": "Product Sprint",
+      "lists": [
+        {
+          "id": "l1",
+          "title": "To Do",
+          "cards": [
+            {
+              "id": "c1",
+              "title": "Wireframe onboarding",
+              "description": "Draft initial mobile + desktop onboarding screens.",
+              "dueDate": "2026-04-04",
+              "priority": "high",
+              "assignee": "Alice"
+            },
+            {
+              "id": "c2",
+              "title": "API checklist",
+              "description": "Confirm endpoints needed for MVP drag/drop.",
+              "dueDate": "2026-04-07",
+              "priority": "medium",
+              "assignee": "Tom"
+            }
+          ]
+        },
+        {
+          "id": "l2",
+          "title": "In Progress",
+          "cards": [
+            {
+              "id": "c3",
+              "title": "Board UI polish",
+              "description": "Improve spacing and task metadata readability.",
+              "dueDate": "2026-04-03",
+              "priority": "medium",
+              "assignee": "Nina"
+            }
+          ]
+        },
+        {
+          "id": "l3",
+          "title": "Done",
+          "cards": [
+            {
+              "id": "c4",
+              "title": "Project setup",
+              "description": "Create base structure and reusable modal.",
+              "dueDate": "2026-03-29",
+              "priority": "low",
+              "assignee": "Sam"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b2",
+      "name": "Personal Tasks",
+      "lists": [
+        {
+          "id": "l4",
+          "title": "Backlog",
+          "cards": []
+        },
+        {
+          "id": "l5",
+          "title": "Doing",
+          "cards": []
+        }
+      ]
+    }
+  ]
+}

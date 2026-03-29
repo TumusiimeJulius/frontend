@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kanban Boards</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div id="app" class="app">
+      <aside id="sidebar" class="sidebar">
+        <div class="sidebar-top">
+          <h2>Boards</h2>
+          <button id="toggleSidebar" class="icon-btn" aria-label="Collapse sidebar">Menu</button>
+        </div>
+        <div id="boardList" class="board-list"></div>
+        <button id="newBoardBtn" class="primary-btn full">+ New Board</button>
+        <div class="sidebar-actions">
+          <button id="settingsBtn" class="ghost-btn full">Settings</button>
+          <button id="themeBtn" class="ghost-btn full">Dark Mode</button>
+        </div>
+      </aside>
+
+      <main class="main">
+        <header class="header">
+          <div>
+            <h1 id="boardTitle">Board</h1>
+          </div>
+          <div class="header-actions">
+            <input id="searchInput" type="search" placeholder="Search tasks..." />
+            <button id="addListBtn" class="primary-btn">+ Add List</button>
+          </div>
+        </header>
+
+        <section id="listsContainer" class="lists-container"></section>
+      </main>
+    </div>
+
+    <div id="modalBackdrop" class="modal-backdrop hidden">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 id="modalTitle">Create</h3>
+          <button id="closeModalBtn" class="icon-btn" aria-label="Close modal">X</button>
+        </div>
+        <form id="entityForm" class="modal-form">
+          <label>
+            Name
+            <input type="text" id="fieldName" required />
+          </label>
+          <label id="descriptionFieldWrap">
+            Description
+            <textarea id="fieldDescription" rows="3"></textarea>
+          </label>
+          <label id="dueDateFieldWrap">
+            Due Date
+            <input type="date" id="fieldDueDate" />
+          </label>
+          <label id="priorityFieldWrap">
+            Priority
+            <select id="fieldPriority">
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+          </label>
+          <label id="assigneeFieldWrap">
+            Assign To
+            <input type="text" id="fieldAssignee" placeholder="Optional" />
+          </label>
+          <div class="modal-footer">
+            <button type="button" id="deleteBtn" class="danger-btn hidden">Delete</button>
+            <button type="submit" class="primary-btn">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
